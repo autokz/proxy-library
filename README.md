@@ -21,7 +21,15 @@ $action = new LoginAction($converter, $configStorage);
 $username = new UsernameType('username');
 $password = new PasswordType('password');
 
-$arrayFrontendData = $authAction->login($username, $password);
+$arrayFrontendAuthData = $action->login($username, $password);
+
+### To check AuthData use AccessAction::class
+$accessAction = new AccessAction($this->converter, $this->configStore);
+$arrayFrontendAuthData = $accessAction->execute($arrayFrontendAuthData);
+
+### To logout user from domains use LogoutAction::class
+$logoutAction = new LogoutAction($this->converter, $this->configStore, $this->httpClient);
+$result = $logoutAction->execute($arrayFrontendAuthData);
 
 ```
 
