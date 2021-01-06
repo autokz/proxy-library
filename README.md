@@ -1,10 +1,11 @@
 # OAuth_proxy
 
-proxy handlers:
+proxy actions:
 
-- LoginHandler::class
-- LogoutHandler::class
-- AccessHandler::class
+- AccessAction::class
+- LoginAction::class
+- LogoutAction::class
+
 
 # Example
 
@@ -13,16 +14,21 @@ proxy handlers:
 
 $converter = new JWTConverter();
 
-$httpClient = new GuzzleHttpClient();
+$configStorage = new DotEnvConfigStorage(__DIR__ . '/../');
+$configStorage->load();
 
-$configStore = new DotEnvConfigStorage(__DIR__ . '/../');
-$configStore->load();
+$action = new LoginAction($converter, $configStorage);
+$username = new UsernameType('username');
+$password = new PasswordType('password');
+
+$arrayFrontendData = $authAction->login($username, $password);
+
 ```
 
 .env example
 
 ```env
-OAUTH_BASE_URL="http://172.17.0.1:8080"
+OAUTH_BASE_URL="http://0.0.0.0:8080"
 
 OAUTH_TYPE="Bearer"
 
