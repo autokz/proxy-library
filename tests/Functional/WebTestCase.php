@@ -37,7 +37,7 @@ class WebTestCase extends TestCase
         $this->configStore->load();
     }
 
-    protected function login(): array
+    protected function login(): string
     {
         $authAction = new LoginAction($this->converter, $this->configStore, $this->httpClient);
 

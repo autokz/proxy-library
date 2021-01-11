@@ -4,7 +4,6 @@
 namespace Test\Functional;
 
 use Exception;
-use Proxy\OAuth\Action\LogoutAction;
 use Proxy\OAuth\Action\RefreshAction;
 
 class RefreshActionTest extends WebTestCase
@@ -13,10 +12,9 @@ class RefreshActionTest extends WebTestCase
         $refreshAction = new RefreshAction($this->configStore, $this->httpClient);
 
         $token = $this->login();
-        $authData = json_decode($this->converter->fromFrontendToJWT($token), true);
+        $authData = $this->converter->fromFrontendToJWT($token);
 
-        $result = $refreshAction->refresh($authData['refresh_token']);
-        $result = json_decode($result, true);
+        $result = $refreshAction->refresh($authData);
 
         self::assertArrayHasKey('token_type', $result);
         self::assertArrayHasKey('expires_in', $result);
@@ -30,10 +28,9 @@ class RefreshActionTest extends WebTestCase
         $refreshAction = new RefreshAction($this->configStore, $this->httpClient);
 
         $token = $this->login();
-        $authData = json_decode($this->converter->fromFrontendToJWT($token), true);
+        $authData = $this->converter->fromFrontendToJWT($token);
 
-        $result = $refreshAction->refresh($authData['refresh_token']);
-        $result = json_decode($result, true);
+        $result = $refreshAction->refresh($authData);
 
         $result['access_token'] .= '__INCORRECT___';
         $result['refresh_token'] .= '__INCORRECT___';
@@ -42,6 +39,6 @@ class RefreshActionTest extends WebTestCase
         $this->expectExceptionMessage('The refresh token is invalid.');
         $this->expectExceptionCode(400);
 
-        $refreshAction->refresh($result['refresh_token']);
+        $refreshAction->refresh($result);
     }
 }
