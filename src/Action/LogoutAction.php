@@ -31,44 +31,40 @@ class LogoutAction
         $this->url = $baseUrl . '/' . $checkUrl;
     }
 
-    public function execute($authData): bool
+    public function execute(string $authData = ''): bool
     {
-        $decryptedAuthData = json_decode($this->converter->fromFrontendToJWT($authData), true);
+        $decryptedAuthData = $this->converter->fromFrontendToJWT($authData);
 
-        if (!$this->logoutByAuthData($decryptedAuthData['access_token'])) {
-            return $this->logoutByRefreshToken($decryptedAuthData['refresh_token']);
+        if (!$decryptedAuthData || isset($decryptedAuthData['refresh_token']) || isset($decryptedAuthData['access_token'])) {
+            return false;
+        }
+
+        if (!$this->logoutByAuthData($decryptedAuthData)) {
+            $this->logoutByRefreshToken($decryptedAuthData);
         }
 
         return true;
     }
 
-    private function logoutByAuthData(string $accessToken): bool
+    private function logoutByAuthData(array $decryptedAuthData): bool
     {
         $headers = [
-            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $accessToken
+            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $decryptedAuthData['access_token']
         ];
 
         $response = $this->httpClient->post($this->url, [], $headers, ['http_errors' => false]);
 
-        if ($response->getStatusCode() === 200) {
-            return true;
-        }
-
-        return false;
+        return $response->getStatusCode() === 200;
     }
 
-    private function logoutByRefreshToken(string $refreshToken): bool
+    private function logoutByRefreshToken(array $decryptedAuthData): void
     {
-        $jwtFromRefresh = (new RefreshAction($this->configStore, $this->httpClient))
-            ->refresh($refreshToken);
-        $jwt = json_decode((string)$jwtFromRefresh, true);
+        $jwtFromRefresh = (new RefreshAction($this->configStore, $this->httpClient))->refresh($decryptedAuthData);
 
         $headers = [
-            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwt['access_token']
+            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwtFromRefresh['access_token']
         ];
 
         $this->httpClient->post($this->url, [], $headers);
-
-        return true;
     }
 }

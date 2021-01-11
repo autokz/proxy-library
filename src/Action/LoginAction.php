@@ -34,7 +34,7 @@ class LoginAction
         $this->url = $baseUrl . '/' . $loginUrl;
     }
 
-    public function login(UsernameType $username, PasswordType $password): array
+    public function login(UsernameType $username, PasswordType $password): string
     {
         $body = [
             'grant_type' => $this->configStore->get('OAUTH_GRANT_TYPE'),
@@ -46,7 +46,7 @@ class LoginAction
             'domain' => $this->configStore->get('OAUTH_DOMAIN')
         ];
 
-        $responseClient = $this->httpClient->post($this->url, $body)->getBody()->getContents();
+        $responseClient = json_decode($this->httpClient->post($this->url, $body)->getBody()->getContents(), true);
 
         return $this->converter->fromJWTToFrontend($responseClient);
     }

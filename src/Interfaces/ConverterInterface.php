@@ -6,7 +6,7 @@ namespace Proxy\OAuth\Interfaces;
 
 interface ConverterInterface
 {
-    public function fromFrontendToJWT(array $auth): string;
+    public function fromFrontendToJWT(string $auth): array;
 
-    public function fromJWTToFrontend(string $jwt): array;
+    public function fromJWTToFrontend(array $jwt): string;
 }
