@@ -25,8 +25,11 @@ class RefreshAction
         $this->url = $baseUrl . '/' . $loginUrl;
     }
 
-    public function refresh(string $refreshToken): string
+    public function refresh(?array $decryptedAuthData): array
     {
+        $refreshToken = $decryptedAuthData ?? [];
+        $refreshToken = isset($refreshToken['refresh_token']) ? $refreshToken['refresh_token'] : '';
+
         $body = [
             'grant_type' => $this->config->get('OAUTH_REFRESH_GRANT_TYPE'),
             'refresh_token' => $refreshToken,
@@ -34,6 +37,6 @@ class RefreshAction
             'client_secret' => $this->config->get('OAUTH_CLIENT_SECRET'),
         ];
 
-        return $this->httpClient->post($this->url, $body, [])->getBody()->getContents();
+        return json_decode($this->httpClient->post($this->url, $body, [])->getBody()->getContents(), true);
     }
 }

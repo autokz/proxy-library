@@ -11,23 +11,23 @@ use Proxy\OAuth\Interfaces\ConverterInterface;
 class JwtConverterBuilder implements ConverterInterface
 {
 
-
-    public function fromFrontendToJWT(array $auth): string
+    public function fromFrontendToJWT(string $auth): array
     {
-        foreach ($auth as $key => $value) {
-            $auth[$key] = str_replace("Test", "", $value);
+        parse_str($auth, $authArr);
+
+        foreach ($authArr as $key => $value) {
+            $authArr[$key] = str_replace("Test", "", $value);
         }
-        return json_encode($auth);
+
+        return $authArr;
     }
 
-    public function fromJWTToFrontend(string $jwt): array
+    public function fromJWTToFrontend(array $jwt): string
     {
-        $authData = json_decode($jwt, true);
-
-        foreach ($authData as $key => $value) {
-            $authData[$key] = $value . 'Test';
+        foreach ($jwt as $key => $value) {
+            $jwt[$key] = $value . 'Test';
         }
 
-        return $authData;
+        return http_build_query($jwt, '', '&');
     }
 }

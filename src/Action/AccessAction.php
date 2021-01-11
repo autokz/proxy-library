@@ -32,25 +32,28 @@ class AccessAction
         $this->url = $baseUrl . '/' . $checkUrl;
     }
 
-    public function execute(array $authData): array
+    public function execute(string $authData = ''): string
     {
-        $decryptedAuthData = json_decode($this->converter->fromFrontendToJWT($authData), true);
-        if (!$this->check($decryptedAuthData['access_token'])) {
+        $decryptedAuthData = $this->converter->fromFrontendToJWT($authData);
+        if (!$this->check($decryptedAuthData)) {
             $jwtFromRefresh = (new RefreshAction($this->configStore, $this->httpClient))
-                ->refresh($decryptedAuthData['refresh_token']);
+                ->refresh($decryptedAuthData);
             return $this->converter->fromJWTToFrontend($jwtFromRefresh);
         }
         return $authData;
     }
 
-    private function check(string $accessToken): bool
+    private function check(?array $decryptedAuthData): bool
     {
+        if(!$decryptedAuthData || isset($decryptedAuthData['access_token'])) {
+            return false;
+        }
+
         $headers = [
-            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $accessToken,
+            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $decryptedAuthData['access_token'],
         ];
 
         $responseClient = $this->httpClient->get($this->url, [], $headers, ['http_errors' => false]);
-
 
         return $responseClient->getStatusCode() === 200;
     }

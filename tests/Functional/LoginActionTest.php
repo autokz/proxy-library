@@ -10,6 +10,7 @@ use Exception;
 use Proxy\OAuth\Action\LoginAction;
 use Proxy\OAuth\Action\Type\PasswordType;
 use Proxy\OAuth\Action\Type\UsernameType;
+use Test\Builder\JwtConverterBuilder;
 
 class LoginActionTest extends WebTestCase
 {
@@ -17,14 +18,14 @@ class LoginActionTest extends WebTestCase
     {
         $result = $this->login();
 
+        $convertedResult = $this->converter->fromFrontendToJWT($result);
+
         self::assertTrue(is_array($result));
-
-        self::assertArrayHasKey('token_type', $result);
-        self::assertArrayHasKey('expires_in', $result);
-        self::assertArrayHasKey('access_token', $result);
-        self::assertArrayHasKey('refresh_token', $result);
-
-        self::assertEquals('BearerTest', $result['token_type']);
+        self::assertArrayHasKey('token_type', $convertedResult);
+        self::assertArrayHasKey('expires_in', $convertedResult);
+        self::assertArrayHasKey('access_token', $convertedResult);
+        self::assertArrayHasKey('refresh_token', $convertedResult);
+        self::assertEquals('BearerTest', $convertedResult['token_type']);
     }
 
     public function testInvalid(): void

@@ -1,31 +1,30 @@
 <?php
-
 declare(strict_types=1);
 
 
 namespace Test\Functional;
 
-
 use Exception;
 use Proxy\OAuth\Action\AccessAction;
+use Test\Builder\JwtConverterBuilder;
 
 class AccessActionTest extends WebTestCase
 {
     public function testSuccess(): void
     {
-        $loginData = $this->login();
+        $oauthDataFromLogin = $this->login();
 
         $accessAction = new AccessAction($this->converter, $this->configStore);
-        $result = $accessAction->execute($loginData);
+        $result = $accessAction->execute($oauthDataFromLogin);
 
-        self::assertTrue(is_array($result));
+        $convertedResult = $this->converter->fromFrontendToJWT($result);
 
-        self::assertArrayHasKey('token_type', $result);
-        self::assertArrayHasKey('expires_in', $result);
-        self::assertArrayHasKey('access_token', $result);
-        self::assertArrayHasKey('refresh_token', $result);
-
-        self::assertEquals('BearerTest', $result['token_type']);
+        self::assertTrue(is_array($convertedResult));
+        self::assertArrayHasKey('token_type', $convertedResult);
+        self::assertArrayHasKey('expires_in', $convertedResult);
+        self::assertArrayHasKey('access_token', $convertedResult);
+        self::assertArrayHasKey('refresh_token', $convertedResult);
+        self::assertEquals('BearerTest', $convertedResult['token_type']);
     }
 
     public function testInvalid(): void
@@ -44,6 +43,9 @@ class AccessActionTest extends WebTestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The refresh token is invalid.');
         $this->expectExceptionCode(400);
-        $accessAction->execute($result);
+
+        $convertedResult = $this->converter->fromJWTToFrontend($result);
+
+        $accessAction->execute($convertedResult);
     }
 }
