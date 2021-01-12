@@ -66,6 +66,21 @@ class ProxyTest extends WebTestCase
         self::AssertTrue($result);
     }
 
+    public function testLogoutInvalid(): void
+    {
+        $jwt = $this->converter->fromFrontendToJWT($this->login());
+
+        $jwt['access_token'] .= '__INCORRECT__ACCESS-TOKEN__';
+        $jwt['refresh_token'] .= '__INCORRECT__REFRESH-TOKEN__';
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The refresh token is invalid.');
+        $this->expectExceptionCode(400);
+
+        $OAuthData = $this->converter->fromJWTToFrontend($jwt);
+        $this->proxy->logout($OAuthData);
+    }
+
     private function login(?string $login = 'login', ?string $password = 'password'): string
     {
         return $this->proxy->login(new UsernameType($login), new PasswordType($password));
