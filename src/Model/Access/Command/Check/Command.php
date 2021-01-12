@@ -11,5 +11,5 @@ class Command
      * @Assert\NotBlank()
      * @Assert\string()
      */
-    public string $jwt;
+    public string $OAuthData;
 }
