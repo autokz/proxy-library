@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace Proxy\OAuth;
-
 
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;

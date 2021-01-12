@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Proxy\OAuth\Helpers\Access;
-
 
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;

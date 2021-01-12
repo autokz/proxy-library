@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Proxy\OAuth\Validator;
 
 use Symfony\Component\Validator\Validation;

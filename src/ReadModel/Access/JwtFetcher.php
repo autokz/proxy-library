@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Proxy\OAuth\ReadModel\Access;
 
 use Proxy\OAuth\Helpers\Access\RefreshHelper;

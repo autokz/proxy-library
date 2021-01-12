@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Proxy\OAuth\Model\Access\Command\Logout;
 
 use Proxy\OAuth\Helpers\Access\RefreshHelper;

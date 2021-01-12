@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace Proxy\OAuth\Model\Access\Type\Test;
-
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
