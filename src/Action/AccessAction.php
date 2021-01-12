@@ -11,20 +11,16 @@ use Proxy\OAuth\Interfaces\HttpClientInterface;
 
 class AccessAction
 {
-    private ConverterInterface $converter;
-    private HttpClientInterface $httpClient;
     private ConfigStoreInterface $configStore;
-
+    private HttpClientInterface $httpClient;
     private string $url;
 
     public function __construct(
-        ConverterInterface $converter,
         ConfigStoreInterface $configStore,
-        HttpClientInterface $httpClient = null
+        HttpClientInterface $httpClient
     ) {
-        $this->converter = $converter;
         $this->configStore = $configStore;
-        $this->httpClient = $httpClient ?? new GuzzleHttpClient();
+        $this->httpClient = $httpClient;
 
         $baseUrl = trim($this->configStore->get('OAUTH_BASE_URL'), '/');
         $checkUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
@@ -32,20 +28,18 @@ class AccessAction
         $this->url = $baseUrl . '/' . $checkUrl;
     }
 
-    public function execute(string $authData = ''): string
+    public function execute(array $authData = []): array
     {
-        $decryptedAuthData = $this->converter->fromFrontendToJWT($authData);
-        if (!$this->check($decryptedAuthData)) {
-            $jwtFromRefresh = (new RefreshAction($this->configStore, $this->httpClient))
-                ->refresh($decryptedAuthData);
-            return $this->converter->fromJWTToFrontend($jwtFromRefresh);
+        if (!$this->check($authData)) {
+            $authData = (new RefreshAction($this->configStore, $this->httpClient))
+                ->refresh($authData);
         }
         return $authData;
     }
 
     private function check(?array $decryptedAuthData): bool
     {
-        if(!$decryptedAuthData || isset($decryptedAuthData['access_token'])) {
+        if (!$decryptedAuthData || isset($decryptedAuthData['access_token'])) {
             return false;
         }
 
