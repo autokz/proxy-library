@@ -1,11 +1,10 @@
 # OAuth_proxy
 
-proxy actions:
+proxy handlers:
 
-- AccessAction::class
-- LoginAction::class
-- LogoutAction::class
-
+- LoginHandler::class
+- LogoutHandler::class
+- AccessHandler::class
 
 # Example
 
@@ -14,29 +13,16 @@ proxy actions:
 
 $converter = new JWTConverter();
 
-$configStorage = new DotEnvConfigStorage(__DIR__ . '/../');
-$configStorage->load();
+$httpClient = new GuzzleHttpClient();
 
-$action = new LoginAction($converter, $configStorage);
-$username = new UsernameType('username');
-$password = new PasswordType('password');
-
-$arrayFrontendAuthData = $action->login($username, $password);
-
-### To check AuthData use AccessAction::class
-$accessAction = new AccessAction($this->converter, $this->configStore);
-$arrayFrontendAuthData = $accessAction->execute($arrayFrontendAuthData);
-
-### To logout user from domains use LogoutAction::class
-$logoutAction = new LogoutAction($this->converter, $this->configStore, $this->httpClient);
-$result = $logoutAction->execute($arrayFrontendAuthData);
-
+$configStore = new DotEnvConfigStorage(__DIR__ . '/../');
+$configStore->load();
 ```
 
 .env example
 
 ```env
-OAUTH_BASE_URL="http://0.0.0.0:8080"
+OAUTH_BASE_URL="http://172.17.0.1:8080"
 
 OAUTH_TYPE="Bearer"
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Proxy\OAuth\Action\Type;
+namespace Proxy\OAuth\Model\Access\Type;
 
 use Webmozart\Assert\Assert;
 
@@ -13,7 +13,7 @@ class PasswordType
     public function __construct(string $password)
     {
         Assert::notEmpty($password, 'No password set.');
-        Assert::minLength($password, 3,'Password must be more than 3 characters');
+        Assert::minLength($password, 3, 'Password must be more than 3 characters');
         $this->password = $password;
     }
 

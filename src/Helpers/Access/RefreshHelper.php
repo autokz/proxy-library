@@ -1,20 +1,19 @@
 <?php
 
-declare(strict_types=1);
+namespace Proxy\OAuth\Helpers\Access;
 
-namespace Proxy\OAuth\Action;
-
-use Proxy\OAuth\Interfaces\ConfigStoreInterface;
+use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
+use Proxy\OAuth\Model\Access\Type\JwtType;
 
-class RefreshAction
+class RefreshHelper
 {
-    private ConfigStoreInterface $config;
+    private ConfigStorageInterface $config;
     private HttpClientInterface $httpClient;
 
     private string $url;
 
-    public function __construct(ConfigStoreInterface $config, HttpClientInterface $httpClient)
+    public function __construct(ConfigStorageInterface $config, HttpClientInterface $httpClient)
     {
         $this->config = $config;
         $this->httpClient = $httpClient;
@@ -25,14 +24,11 @@ class RefreshAction
         $this->url = $baseUrl . '/' . $loginUrl;
     }
 
-    public function refresh(?array $decryptedAuthData): array
+    public function refresh(JwtType $jwt): array
     {
-        $refreshToken = $decryptedAuthData ?? [];
-        $refreshToken = isset($refreshToken['refresh_token']) ? $refreshToken['refresh_token'] : '';
-
         $body = [
             'grant_type' => $this->config->get('OAUTH_REFRESH_GRANT_TYPE'),
-            'refresh_token' => $refreshToken,
+            'refresh_token' => $jwt->getValue()['refresh_token'],
             'client_id' => $this->config->get('OAUTH_CLIENT_ID'),
             'client_secret' => $this->config->get('OAUTH_CLIENT_SECRET'),
         ];

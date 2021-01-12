@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Proxy\OAuth\Helpers;
 
 use Dotenv\Dotenv;
-use Proxy\OAuth\Interfaces\ConfigStoreInterface;
+use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 
-class DotEnvConfigStorage implements ConfigStoreInterface
+class DotEnvConfigStorage implements ConfigStorageInterface
 {
 
     private Dotenv $store;
