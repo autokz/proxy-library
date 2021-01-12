@@ -11,9 +11,9 @@ use Proxy\OAuth\Interfaces\ConverterInterface;
 class JwtConverterBuilder implements ConverterInterface
 {
 
-    public function fromFrontendToJWT(string $auth): array
+    public function fromFrontendToJWT(string $oauthData): array
     {
-        parse_str($auth, $authArr);
+        parse_str($oauthData, $authArr);
 
         foreach ($authArr as $key => $value) {
             $authArr[$key] = str_replace("Test", "", $value);
