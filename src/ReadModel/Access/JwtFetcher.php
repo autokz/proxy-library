@@ -8,12 +8,14 @@ use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStoreInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
 use Proxy\OAuth\Model\Access\Command\Check\Command;
+use Proxy\OAuth\Model\Access\Command\Login\Command as CommandLogin;
 
-class UpdateJwtFetcher
+class JwtFetcher
 {
     private ConfigStoreInterface $configStore;
     private HttpClientInterface $httpClient;
-    private string $url;
+    private string $checkUrl;
+    private string $loginUrl;
 
     public function __construct(
         ConfigStoreInterface $configStore,
@@ -23,12 +25,35 @@ class UpdateJwtFetcher
         $this->httpClient = $httpClient ?? new GuzzleHttpClient();
 
         $baseUrl = trim($this->configStore->get('OAUTH_BASE_URL'), '/');
-        $checkUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
 
-        $this->url = $baseUrl . '/' . $checkUrl;
+        $checkUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
+        $this->checkUrl = $baseUrl . '/' . $checkUrl;
+
+        $loginUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
+        $this->loginUrl = $baseUrl . '/' . $loginUrl;
     }
 
-    public function updateJwt(Command $command): array
+    public function getJwt(CommandLogin $command): array
+    {
+        $username = $command->username;
+        $password = $command->password;
+
+        $body = [
+            'grant_type' => $this->configStore->get('OAUTH_GRANT_TYPE'),
+            'username' => $username,
+            'password' => $password,
+            'client_id' => $this->configStore->get('OAUTH_CLIENT_ID'),
+            'client_secret' => $this->configStore->get('OAUTH_CLIENT_SECRET'),
+            'access_type' => $this->configStore->get('OAUTH_ACCESS_TYPE'),
+            'domain' => $this->configStore->get('OAUTH_DOMAIN')
+        ];
+
+        $Jwt = $this->httpClient->post($this->loginUrl, $body)->getBody()->getContents();
+
+        return json_decode($Jwt, true);
+    }
+
+    public function getByOAuthData(Command $command): array
     {
         $Jwt = $command->jwt;
 
@@ -46,7 +71,7 @@ class UpdateJwtFetcher
             'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $decryptedAuthData['access_token'],
         ];
 
-        $responseClient = $this->httpClient->get($this->url, [], $headers, ['http_errors' => false]);
+        $responseClient = $this->httpClient->get($this->checkUrl, [], $headers, ['http_errors' => false]);
 
         return $responseClient->getStatusCode() === 200;
     }

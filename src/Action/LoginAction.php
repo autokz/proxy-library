@@ -9,19 +9,20 @@ use Proxy\OAuth\Model\Access\Command\Login\Command;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
 use Proxy\OAuth\ReadModel\Access\GetJwtFetcher;
+use Proxy\OAuth\ReadModel\Access\JwtFetcher;
 use Proxy\OAuth\Validator\Validator;
 
 class LoginAction
 {
-    private GetJwtFetcher $fetcher;
+    private JwtFetcher $fetcher;
     private Validator $validator;
     private ConverterInterface $converter;
 
-    public function __construct(GetJwtFetcher $fetcher, Validator $validator, ConverterInterface $converter)
+    public function __construct(JwtFetcher $fetcher, ConverterInterface $converter)
     {
-        $this->validator = $validator;
         $this->fetcher = $fetcher;
         $this->converter = $converter;
+        $this->validator = new Validator();
     }
 
     public function handle(UsernameType $username, PasswordType $password): string

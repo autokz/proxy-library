@@ -10,10 +10,9 @@ use Proxy\OAuth\Action\LoginAction;
 use Proxy\OAuth\Helpers\DotEnvConfigStorage;
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConverterInterface;
-use Proxy\OAuth\Model\Access\Command\Login\Command;
-use Proxy\OAuth\Model\Access\Command\Login\Handler;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
+use Proxy\OAuth\ReadModel\Access\GetJwtFetcher;
 use Proxy\OAuth\Validator\Validator;
 use Test\Builder\JwtConverterBuilder;
 
@@ -21,8 +20,7 @@ class WebTestCase extends TestCase
 {
 
     protected ConverterInterface $converter;
-    protected string $username;
-    protected string $password;
+    protected Validator $validator;
     protected GuzzleHttpClient $httpClient;
     protected DotEnvConfigStorage $configStore;
 
@@ -31,8 +29,8 @@ class WebTestCase extends TestCase
         parent::setUp();
 
         $this->converter = new JwtConverterBuilder();
-        $this->username = 'tyanrv';
-        $this->password = 'hash';
+
+        $this->validator = new Validator();
 
         $this->httpClient = new GuzzleHttpClient();
 
@@ -40,16 +38,15 @@ class WebTestCase extends TestCase
         $this->configStore->load();
     }
 
-    protected function login(): void
+    protected function login(): string
     {
-        $loginHandler = new Handler($this->converter, $this->configStore, $this->httpClient);
-        $validator = new Validator();
+        $fetcher = new GetJwtFetcher($this->configStore, $this->httpClient);
+
+        $authAction = new LoginAction($fetcher, $this->validator, $this->converter);
 
         $username = new UsernameType('tyanrv');
         $password = new PasswordType('hash');
 
-        $authAction = new LoginAction($loginHandler, $validator);
-
-        $authAction->handle($username, $password);
+        return $authAction->handle($username, $password);
     }
 }

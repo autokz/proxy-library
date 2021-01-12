@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -10,7 +11,7 @@ class AccessActionTest extends WebTestCase
 {
     public function testSuccess(): void
     {
-        $this->login();
+        $Jwt = $this->converter->fromFrontendToJWT($this->login());
 
         $accessAction = new AccessAction($this->converter, $this->configStore);
         $result = $accessAction->execute($oauthDataFromLogin);

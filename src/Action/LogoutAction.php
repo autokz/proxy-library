@@ -13,14 +13,15 @@ use Proxy\OAuth\Validator\Validator;
 class LogoutAction
 {
     private Handler $handler;
-    private Validator $validator;
     private ConverterInterface $converter;
+    private Validator $validator;
 
-    public function __construct(Handler $handler, Validator $validator, ConverterInterface $converter)
+    public function __construct(Handler $handler, ConverterInterface $converter)
     {
-        $this->validator = $validator;
         $this->handler = $handler;
         $this->converter = $converter;
+
+        $this->validator = new Validator();
     }
 
     public function handle(string $OAuthData): bool
