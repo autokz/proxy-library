@@ -28,7 +28,7 @@ class JwtFetcher
         $checkUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
         $this->checkUrl = $baseUrl . '/' . $checkUrl;
 
-        $loginUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
+        $loginUrl = trim($this->configStore->get('OAUTH_URL'), '/');
         $this->loginUrl = $baseUrl . '/' . $loginUrl;
     }
 

@@ -6,13 +6,9 @@ declare(strict_types=1);
 namespace Test\Functional;
 
 use PHPUnit\Framework\TestCase;
-use Proxy\OAuth\Action\LoginAction;
 use Proxy\OAuth\Helpers\DotEnvConfigStorage;
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConverterInterface;
-use Proxy\OAuth\Model\Access\Type\PasswordType;
-use Proxy\OAuth\Model\Access\Type\UsernameType;
-use Proxy\OAuth\ReadModel\Access\GetJwtFetcher;
 use Proxy\OAuth\ReadModel\Access\JwtFetcher;
 use Proxy\OAuth\Validator\Validator;
 use Test\Builder\JwtConverterBuilder;
@@ -24,6 +20,10 @@ class WebTestCase extends TestCase
     protected Validator $validator;
     protected GuzzleHttpClient $httpClient;
     protected DotEnvConfigStorage $configStore;
+    /**
+     * @var JwtFetcher
+     */
+    protected JwtFetcher $fetcher;
 
     protected function setUp(): void
     {
@@ -40,4 +40,5 @@ class WebTestCase extends TestCase
 
         $this->fetcher = new JwtFetcher($this->configStore, $this->httpClient);
     }
+
 }
