@@ -8,7 +8,7 @@ use Proxy\OAuth\Model\Access\Command\Check\Command;
 use Proxy\OAuth\Model\Access\Command\Check\Handler;
 use Proxy\OAuth\Validator\Validator;
 
-class AccessAction
+class CheckAction
 {
     private Handler $handler;
     private Validator $validator;
