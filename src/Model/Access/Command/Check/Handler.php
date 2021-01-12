@@ -2,7 +2,8 @@
 
 namespace Proxy\OAuth\Model\Access\Command\Check;
 
-use Proxy\OAuth\Action\RefreshAction;
+use Proxy\OAuth\Helpers\Access\RefreshHelper;
+use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStoreInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
@@ -17,11 +18,11 @@ class Handler
     public function __construct(
         ConverterInterface $converter,
         ConfigStoreInterface $configStore,
-        HttpClientInterface $httpClient
+        HttpClientInterface $httpClient = null
     ) {
         $this->converter = $converter;
         $this->configStore = $configStore;
-        $this->httpClient = $httpClient;
+        $this->httpClient = $httpClient ?? new GuzzleHttpClient();
 
         $baseUrl = trim($this->configStore->get('OAUTH_BASE_URL'), '/');
         $checkUrl = trim($this->configStore->get('OAUTH_CHECK_URL'), '/');
@@ -36,7 +37,7 @@ class Handler
         $JWT = $this->converter->fromFrontendToJWT($OAuthData);
 
         if (!$this->check($JWT)) {
-            $JWT = (new RefreshAction($this->configStore, $this->httpClient))
+            $JWT = (new RefreshHelper($this->configStore, $this->httpClient))
                 ->refresh($JWT);
         }
 

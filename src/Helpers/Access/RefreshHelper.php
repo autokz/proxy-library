@@ -1,13 +1,13 @@
 <?php
 
-declare(strict_types=1);
 
-namespace Proxy\OAuth\Action;
+namespace Proxy\OAuth\Helpers\Access;
+
 
 use Proxy\OAuth\Interfaces\ConfigStoreInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
 
-class RefreshAction
+class RefreshHelper
 {
     private ConfigStoreInterface $config;
     private HttpClientInterface $httpClient;

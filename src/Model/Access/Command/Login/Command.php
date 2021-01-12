@@ -9,7 +9,15 @@ class Command
 {
     /**
      * @Assert\NotBlank()
-     * @Assert\string()
+     * @Assert\Type("string")
+     * @Assert\Length(min=3)
      */
-    public string $OAuthData;
+    public string $username;
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Type("string")
+     * @Assert\Length(min=3)
+     */
+    public string $password;
 }

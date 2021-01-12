@@ -9,7 +9,7 @@ class Command
 {
     /**
      * @Assert\NotBlank()
-     * @Assert\string()
+     * @Assert\Type("string")
      */
     public string $OAuthData;
 }
