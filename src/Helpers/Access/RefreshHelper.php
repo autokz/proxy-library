@@ -6,6 +6,7 @@ namespace Proxy\OAuth\Helpers\Access;
 
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
+use Proxy\OAuth\Model\Access\Type\JwtType;
 
 class RefreshHelper
 {
@@ -25,14 +26,11 @@ class RefreshHelper
         $this->url = $baseUrl . '/' . $loginUrl;
     }
 
-    public function refresh(?array $decryptedAuthData): array
+    public function refresh(JwtType $jwt): array
     {
-        $refreshToken = $decryptedAuthData ?? [];
-        $refreshToken = isset($refreshToken['refresh_token']) ? $refreshToken['refresh_token'] : '';
-
         $body = [
             'grant_type' => $this->config->get('OAUTH_REFRESH_GRANT_TYPE'),
-            'refresh_token' => $refreshToken,
+            'refresh_token' => $jwt->getValue()['refresh_token'],
             'client_id' => $this->config->get('OAUTH_CLIENT_ID'),
             'client_secret' => $this->config->get('OAUTH_CLIENT_SECRET'),
         ];

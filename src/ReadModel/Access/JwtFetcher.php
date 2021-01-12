@@ -6,8 +6,9 @@ namespace Proxy\OAuth\ReadModel\Access;
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
-use Proxy\OAuth\Model\Access\Command\Check\Command;
-use Proxy\OAuth\Model\Access\Command\Login\Command as CommandLogin;
+use Proxy\OAuth\Model\Access\Type\JwtType;
+use Proxy\OAuth\Model\Access\Type\PasswordType;
+use Proxy\OAuth\Model\Access\Type\UsernameType;
 
 class JwtFetcher
 {
@@ -32,15 +33,12 @@ class JwtFetcher
         $this->loginUrl = $baseUrl . '/' . $loginUrl;
     }
 
-    public function getJwtByUsernamePassword(CommandLogin $command): array
+    public function getJwtByUsernamePassword(UsernameType $username, PasswordType $password): array
     {
-        $username = $command->username;
-        $password = $command->password;
-
         $body = [
             'grant_type' => $this->configStore->get('OAUTH_GRANT_TYPE'),
-            'username' => $username,
-            'password' => $password,
+            'username' => $username->getValue(),
+            'password' => $password->getValue(),
             'client_id' => $this->configStore->get('OAUTH_CLIENT_ID'),
             'client_secret' => $this->configStore->get('OAUTH_CLIENT_SECRET'),
             'access_type' => $this->configStore->get('OAUTH_ACCESS_TYPE'),
@@ -52,22 +50,22 @@ class JwtFetcher
         return json_decode($Jwt, true);
     }
 
-    public function getByOAuthData(Command $command): array
+    public function getByOAuthData(JwtType $jwt): array
     {
-        $Jwt = $command->jwt;
+        $jwtArray = $jwt->getValue();
 
-        if (!$this->check($Jwt)) {
-            $Jwt = (new RefreshHelper($this->configStore, $this->httpClient))
-                ->refresh($Jwt);
+        if (!$this->check($jwtArray)) {
+            $jwtArray = (new RefreshHelper($this->configStore, $this->httpClient))
+                ->refresh($jwt);
         }
 
-        return $Jwt;
+        return $jwtArray;
     }
 
-    private function check(array $decryptedAuthData): bool
+    private function check(array $jwt): bool
     {
         $headers = [
-            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $decryptedAuthData['access_token'],
+            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwt['access_token'],
         ];
 
         $responseClient = $this->httpClient->get($this->checkUrl, [], $headers, ['http_errors' => false]);
