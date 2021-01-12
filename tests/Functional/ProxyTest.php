@@ -20,8 +20,8 @@ class ProxyTest extends WebTestCase
 
     public function testLoginEmptyData(): void
     {
-        $username = '__INCORRECT__USERNAME__';
-        $password = '__INCORRECT__PASSWORD__';
+        $username = '__INCORRECT-USERNAME__';
+        $password = '__INCORRECT-PASSWORD__';
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('The User Entity not found, check user, domain credentials.');
