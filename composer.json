@@ -10,15 +10,14 @@
     "php": ">=7.4.0",
     "ext-json": "*",
     "guzzlehttp/guzzle": "^7.2",
-    "symfony/validator": "^5.2",
-    "vlucas/phpdotenv": "^5.2"
+    "vlucas/phpdotenv": "^5.2",
+    "webmozart/assert": "^1.9"
   },
   "require-dev": {
     "overtrue/phplint": "^2.3",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest",
-    "squizlabs/php_codesniffer": "^3.5",
-    "webmozart/assert": "^1.9"
+    "squizlabs/php_codesniffer": "^3.5"
   },
   "autoload": {
     "psr-4": {
@@ -39,11 +38,13 @@
   "authors": [
     {
       "name": "Farid",
-      "email": "farid-n@auto.kz"
+      "email": "farid-n@auto.kz",
+      "homepage": "https://github.com/faridjan"
     },
     {
       "name": "Roman Tyan",
-      "email": "roman-t@auto.kz"
+      "email": "roman-t@auto.kz",
+      "homepage": "https://github.com/tyanrv"
     }
   ]
 }
