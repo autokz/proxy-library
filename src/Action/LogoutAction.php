@@ -26,10 +26,10 @@ class LogoutAction
 
     public function handle(string $OAuthData): bool
     {
-        $Jwt = $this->converter->fromFrontendToJWT($OAuthData);
+        $jwt = $this->converter->fromFrontendToJWT($OAuthData);
 
         $command = new Command();
-        $command->jwt = $Jwt;
+        $command->jwt = $jwt;
 
         $this->validator->validate($command);
 
