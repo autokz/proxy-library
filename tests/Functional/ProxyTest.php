@@ -15,10 +15,7 @@ class ProxyTest extends WebTestCase
 
     public function testLoginSuccess(): void
     {
-        $username = 'login';
-        $password = 'password';
-
-        $jwt = $this->converter->fromFrontendToJWT($this->login($username, $password));
+        $jwt = $this->converter->fromFrontendToJWT($this->login());
 
         self::assertTrue(is_array($jwt));
         self::assertArrayHasKey('token_type', $jwt);
@@ -39,7 +36,11 @@ class ProxyTest extends WebTestCase
         $this->login($username, $password);
     }
 
-    private function login(string $login, string $password): string
+    public function testCheckSuccess(): void
+    {
+    }
+
+    private function login(?string $login = 'login', ?string $password = 'password'): string
     {
         $authAction = new Proxy($this->converter, $this->configStore);
 
