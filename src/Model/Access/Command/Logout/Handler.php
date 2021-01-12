@@ -8,6 +8,7 @@ use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
+use Proxy\OAuth\Model\Access\Type\JwtType;
 
 class Handler
 {
@@ -31,19 +32,17 @@ class Handler
         $this->url = $baseUrl . '/' . $checkUrl;
     }
 
-    public function handle(Command $command): void
+    public function handle(JwtType $jwt): void
     {
-        $Jwt = $command->jwt;
-
-        if (!$this->logoutByAuthData($Jwt)) {
-            $this->logoutByRefreshToken($Jwt);
+        if (!$this->logoutByAuthData($jwt)) {
+            $this->logoutByRefreshToken($jwt);
         }
     }
 
-    private function logoutByAuthData(array $decryptedAuthData): bool
+    private function logoutByAuthData(JwtType $jwt): bool
     {
         $headers = [
-            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $decryptedAuthData['access_token']
+            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwt->getValue()['access_token']
         ];
 
         $response = $this->httpClient->post($this->url, [], $headers, ['http_errors' => false]);
@@ -51,9 +50,9 @@ class Handler
         return $response->getStatusCode() === 200;
     }
 
-    private function logoutByRefreshToken(array $decryptedAuthData): void
+    private function logoutByRefreshToken(JwtType $jwt): void
     {
-        $jwtFromRefresh = (new RefreshHelper($this->configStore, $this->httpClient))->refresh($decryptedAuthData);
+        $jwtFromRefresh = (new RefreshHelper($this->configStore, $this->httpClient))->refresh($jwt);
 
         $headers = [
             'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwtFromRefresh['refresh_token']

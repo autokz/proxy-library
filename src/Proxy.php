@@ -10,6 +10,7 @@ use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
+use Proxy\OAuth\Model\Access\Command\Logout\Handler;
 use Proxy\OAuth\Model\Access\Type\JwtType;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
@@ -45,8 +46,16 @@ class Proxy
         return $this->converter->fromJWTToFrontend($jwt);
     }
 
-    public function logout(): void
+    public function logout(string $authData): bool
     {
+        $jwt = $this->converter->fromFrontendToJWT($authData);
+
+        $logoutHandler = new Handler($this->converter, $this->configStore);
+        $logoutHandler->handle(new JwtType($jwt));
+
+        $this->converter->fromJWTToFrontend([]);
+
+        return true;
     }
 
     public function check(string $authData): string
