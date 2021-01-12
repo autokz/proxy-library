@@ -4,28 +4,35 @@ declare(strict_types=1);
 
 namespace Proxy\OAuth\Action;
 
+use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Model\Access\Command\Check\Command;
-use Proxy\OAuth\Model\Access\Command\Check\Handler;
+use Proxy\OAuth\ReadModel\Access\UpdateJwtFetcher;
 use Proxy\OAuth\Validator\Validator;
 
 class CheckAction
 {
-    private Handler $handler;
+    private UpdateJwtFetcher $fetcher;
     private Validator $validator;
+    private ConverterInterface $converter;
 
-    public function __construct(Handler $handler, Validator $validator)
+    public function __construct(UpdateJwtFetcher $fetcher, Validator $validator, ConverterInterface $converter)
     {
         $this->validator = $validator;
-        $this->handler = $handler;
+        $this->fetcher = $fetcher;
+        $this->converter = $converter;
     }
 
-    public function handle(string $OAuthData): void
+    public function handle(string $OAuthData): string
     {
+        $Jwt = $this->converter->fromFrontendToJWT($OAuthData);
+
         $command = new Command();
-        $command->OAuthData = $OAuthData;
+        $command->jwt = $Jwt;
 
         $this->validator->validate($command);
 
-        $this->handler->handle($command);
+        $Jwt = $this->fetcher->updateJwt($command);
+
+        return $this->converter->fromJWTToFrontend($Jwt);
     }
 }

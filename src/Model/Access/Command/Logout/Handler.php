@@ -3,13 +3,11 @@
 
 namespace Proxy\OAuth\Model\Access\Command\Logout;
 
-use InvalidArgumentException;
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStoreInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
-use Proxy\OAuth\Model\Access\Command\Check\Command;
 
 class Handler
 {
@@ -35,16 +33,10 @@ class Handler
 
     public function handle(Command $command): void
     {
-        $OAuthData = $command->OAuthData;
+        $Jwt = $command->jwt;
 
-        $JWT = $this->converter->fromFrontendToJWT($OAuthData);
-
-        if (!$JWT || !isset($JWT['refresh_token']) || !isset($JWT['access_token'])) {
-            throw new InvalidArgumentException('Invalid OAuth data.');
-        }
-
-        if (!$this->logoutByAuthData($JWT)) {
-            $this->logoutByRefreshToken($JWT);
+        if (!$this->logoutByAuthData($Jwt)) {
+            $this->logoutByRefreshToken($Jwt);
         }
     }
 
@@ -64,7 +56,7 @@ class Handler
         $jwtFromRefresh = (new RefreshHelper($this->configStore, $this->httpClient))->refresh($decryptedAuthData);
 
         $headers = [
-            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwtFromRefresh['access_token']
+            'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwtFromRefresh['refresh_token']
         ];
 
         $this->httpClient->post($this->url, [], $headers);

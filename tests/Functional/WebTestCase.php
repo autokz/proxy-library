@@ -7,11 +7,14 @@ namespace Test\Functional;
 
 use PHPUnit\Framework\TestCase;
 use Proxy\OAuth\Action\LoginAction;
-use Proxy\OAuth\Action\Type\PasswordType;
-use Proxy\OAuth\Action\Type\UsernameType;
 use Proxy\OAuth\Helpers\DotEnvConfigStorage;
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConverterInterface;
+use Proxy\OAuth\Model\Access\Command\Login\Command;
+use Proxy\OAuth\Model\Access\Command\Login\Handler;
+use Proxy\OAuth\Model\Access\Type\PasswordType;
+use Proxy\OAuth\Model\Access\Type\UsernameType;
+use Proxy\OAuth\Validator\Validator;
 use Test\Builder\JwtConverterBuilder;
 
 class WebTestCase extends TestCase
@@ -37,13 +40,16 @@ class WebTestCase extends TestCase
         $this->configStore->load();
     }
 
-    protected function login(): string
+    protected function login(): void
     {
-        $authAction = new LoginAction($this->converter, $this->configStore, $this->httpClient);
+        $loginHandler = new Handler($this->converter, $this->configStore, $this->httpClient);
+        $validator = new Validator();
 
         $username = new UsernameType('tyanrv');
         $password = new PasswordType('hash');
 
-        return $authAction->login($username, $password);
+        $authAction = new LoginAction($loginHandler, $validator);
+
+        $authAction->handle($username, $password);
     }
 }

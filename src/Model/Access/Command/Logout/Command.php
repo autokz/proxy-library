@@ -9,7 +9,7 @@ class Command
 {
     /**
      * @Assert\NotBlank()
-     * @Assert\string()
+     * @Assert\Type("array")
      */
-    public string $OAuthData;
+    public array $jwt;
 }

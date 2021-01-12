@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Test\Functional;
 
 use Exception;
-use Proxy\OAuth\Action\AccessAction;
-use Test\Builder\JwtConverterBuilder;
 
 class AccessActionTest extends WebTestCase
 {
     public function testSuccess(): void
     {
-        $oauthDataFromLogin = $this->login();
+        $this->login();
 
         $accessAction = new AccessAction($this->converter, $this->configStore);
         $result = $accessAction->execute($oauthDataFromLogin);

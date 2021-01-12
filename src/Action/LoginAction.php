@@ -4,24 +4,27 @@ declare(strict_types=1);
 
 namespace Proxy\OAuth\Action;
 
+use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Model\Access\Command\Login\Command;
-use Proxy\OAuth\Model\Access\Command\Login\Handler;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
+use Proxy\OAuth\ReadModel\Access\GetJwtFetcher;
 use Proxy\OAuth\Validator\Validator;
 
 class LoginAction
 {
-    private Handler $handler;
+    private GetJwtFetcher $fetcher;
     private Validator $validator;
+    private ConverterInterface $converter;
 
-    public function __construct(Handler $handler, Validator $validator)
+    public function __construct(GetJwtFetcher $fetcher, Validator $validator, ConverterInterface $converter)
     {
         $this->validator = $validator;
-        $this->handler = $handler;
+        $this->fetcher = $fetcher;
+        $this->converter = $converter;
     }
 
-    public function handle(UsernameType $username, PasswordType $password): void
+    public function handle(UsernameType $username, PasswordType $password): string
     {
         $command = new Command();
         $command->username = $username->getValue();
@@ -29,6 +32,8 @@ class LoginAction
 
         $this->validator->validate($command);
 
-        $this->handler->handle($command);
+        $Jwt = $this->fetcher->getJwt($command);
+
+        return $this->converter->fromJWTToFrontend($Jwt);
     }
 }

@@ -1,26 +1,24 @@
 <?php
 
-namespace Proxy\OAuth\Model\Access\Command\Check;
+
+namespace Proxy\OAuth\ReadModel\Access;
 
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStoreInterface;
-use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
+use Proxy\OAuth\Model\Access\Command\Check\Command;
 
-class Handler
+class UpdateJwtFetcher
 {
-    private ConverterInterface $converter;
     private ConfigStoreInterface $configStore;
     private HttpClientInterface $httpClient;
     private string $url;
 
     public function __construct(
-        ConverterInterface $converter,
         ConfigStoreInterface $configStore,
         HttpClientInterface $httpClient = null
     ) {
-        $this->converter = $converter;
         $this->configStore = $configStore;
         $this->httpClient = $httpClient ?? new GuzzleHttpClient();
 
@@ -30,26 +28,20 @@ class Handler
         $this->url = $baseUrl . '/' . $checkUrl;
     }
 
-    public function handle(Command $command): void
+    public function updateJwt(Command $command): array
     {
-        $OAuthData = $command->OAuthData;
+        $Jwt = $command->jwt;
 
-        $JWT = $this->converter->fromFrontendToJWT($OAuthData);
-
-        if (!$this->check($JWT)) {
-            $JWT = (new RefreshHelper($this->configStore, $this->httpClient))
-                ->refresh($JWT);
+        if (!$this->check($Jwt)) {
+            $Jwt = (new RefreshHelper($this->configStore, $this->httpClient))
+                ->refresh($Jwt);
         }
 
-        $this->converter->fromJWTToFrontend($JWT);
+        return $Jwt;
     }
 
-    private function check(?array $decryptedAuthData): bool
+    private function check(array $decryptedAuthData): bool
     {
-        if (!$decryptedAuthData || isset($decryptedAuthData['access_token'])) {
-            return false;
-        }
-
         $headers = [
             'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $decryptedAuthData['access_token'],
         ];

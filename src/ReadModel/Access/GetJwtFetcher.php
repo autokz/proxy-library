@@ -1,28 +1,25 @@
 <?php
 
 
-namespace Proxy\OAuth\Model\Access\Command\Login;
+namespace Proxy\OAuth\ReadModel\Access;
 
 
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStoreInterface;
-use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
+use Proxy\OAuth\Model\Access\Command\Login\Command;
 
-class Handler
+class GetJwtFetcher
 {
-    private ConverterInterface $converter;
     private HttpClientInterface $httpClient;
     private ConfigStoreInterface $configStore;
 
     private string $url;
 
     public function __construct(
-        ConverterInterface $converter,
         ConfigStoreInterface $configStore,
         HttpClientInterface $httpClient = null
     ) {
-        $this->converter = $converter;
         $this->configStore = $configStore;
         $this->httpClient = $httpClient ?? new GuzzleHttpClient();
 
@@ -32,7 +29,7 @@ class Handler
         $this->url = $baseUrl . '/' . $loginUrl;
     }
 
-    public function handle(Command $command): void
+    public function getJwt(Command $command): array
     {
         $username = $command->username;
         $password = $command->password;
@@ -47,8 +44,8 @@ class Handler
             'domain' => $this->configStore->get('OAUTH_DOMAIN')
         ];
 
-        $responseClient = json_decode($this->httpClient->post($this->url, $body)->getBody()->getContents(), true);
+        $Jwt = $this->httpClient->post($this->url, $body)->getBody()->getContents();
 
-        $this->converter->fromJWTToFrontend($responseClient);
+        return json_decode($Jwt, true);
     }
 }
