@@ -11,14 +11,14 @@ use Proxy\OAuth\Model\Access\Type\UsernameType;
 
 class ProxyTest extends WebTestCase
 {
-    public function testLoginSuccess(): void
+    public function testLoginMethodSuccess(): void
     {
         $jwt = $this->converter->fromFrontendToJWT($this->login());
 
         $this->assertCorrectJwt($jwt);
     }
 
-    public function testLoginEmptyData(): void
+    public function testLoginMethodEmptyData(): void
     {
         $username = '__INCORRECT-USERNAME__';
         $password = '__INCORRECT-PASSWORD__';
@@ -30,7 +30,7 @@ class ProxyTest extends WebTestCase
         $this->login($username, $password);
     }
 
-    public function testCheckSuccess(): void
+    public function testCheckMethodSuccess(): void
     {
         $OAuthData = $this->login();
 
@@ -41,7 +41,7 @@ class ProxyTest extends WebTestCase
         $this->assertCorrectJwt($jwt);
     }
 
-    public function testCheckInvalid(): void
+    public function testCheckMethodInvalid(): void
     {
         $result = [
             "token_type" => "__INCORRECT__TYPE__",
@@ -57,7 +57,7 @@ class ProxyTest extends WebTestCase
         $this->proxy->check($this->converter->fromJWTToFrontend($result));
     }
 
-    public function testLogoutSuccess(): void
+    public function testLogoutMethodSuccess(): void
     {
         $OAuthData = $this->login();
 
@@ -66,7 +66,7 @@ class ProxyTest extends WebTestCase
         self::AssertTrue($result);
     }
 
-    public function testLogoutInvalid(): void
+    public function testLogoutMethodInvalid(): void
     {
         $jwt = $this->converter->fromFrontendToJWT($this->login());
 
