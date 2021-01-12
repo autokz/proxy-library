@@ -48,7 +48,7 @@ class Proxy
         $command->username = $userName->getValue();
         $command->password = $password->getValue();
 
-//        $this->validator->validate($command);
+        $this->validator->validate($command);
 
         $jwt = $this->fetcher->getJwtByUsernamePassword($command);
 

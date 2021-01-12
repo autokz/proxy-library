@@ -9,10 +9,7 @@ class Validator
 {
     public function validate(object $object): void
     {
-        $validator = Validation::createValidatorBuilder()
-            ->enableAnnotationMapping()
-            ->addMethodMapping('loadValidatorMetadata')
-            ->getValidator();
+        $validator = Validation::createValidator();
 
         $violations = $validator->validate($object);
 
