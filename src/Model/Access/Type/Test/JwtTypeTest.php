@@ -18,12 +18,44 @@ class JwtTypeTest extends TestCase
         'access_token' => 'tokenAccess',
         'refresh_token' => 'tokenRefresh'
     ];
+
     public function testNotExistTokenType(): void
     {
         $jwt = self::$JWT;
         unset($jwt['token_type']);
 
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt should contain key "token_type".');
+        new JwtType($jwt);
+    }
+
+    public function testNotExistExpiresIn(): void
+    {
+        $jwt = self::$JWT;
+        unset($jwt['expires_in']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt should contain key "expires_in".');
+        new JwtType($jwt);
+    }
+
+    public function testNotExistAccessToken(): void
+    {
+        $jwt = self::$JWT;
+        unset($jwt['access_token']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt should contain key "access_token".');
+        new JwtType($jwt);
+    }
+
+    public function testNotExistRefreshToken(): void
+    {
+        $jwt = self::$JWT;
+        unset($jwt['refresh_token']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt should contain key "refresh_token".');
         new JwtType($jwt);
     }
 }
