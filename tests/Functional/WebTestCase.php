@@ -13,6 +13,7 @@ use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
 use Proxy\OAuth\ReadModel\Access\GetJwtFetcher;
+use Proxy\OAuth\ReadModel\Access\JwtFetcher;
 use Proxy\OAuth\Validator\Validator;
 use Test\Builder\JwtConverterBuilder;
 
@@ -36,17 +37,7 @@ class WebTestCase extends TestCase
 
         $this->configStore = new DotEnvConfigStorage(__DIR__ . '/../../');
         $this->configStore->load();
-    }
 
-    protected function login(): string
-    {
-        $fetcher = new GetJwtFetcher($this->configStore, $this->httpClient);
-
-        $authAction = new LoginAction($fetcher, $this->validator, $this->converter);
-
-        $username = new UsernameType('tyanrv');
-        $password = new PasswordType('hash');
-
-        return $authAction->handle($username, $password);
+        $this->fetcher = new JwtFetcher($this->configStore, $this->httpClient);
     }
 }

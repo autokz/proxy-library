@@ -32,7 +32,7 @@ class JwtFetcher
         $this->loginUrl = $baseUrl . '/' . $loginUrl;
     }
 
-    public function getJwt(CommandLogin $command): array
+    public function getJwtByUsernamePassword(CommandLogin $command): array
     {
         $username = $command->username;
         $password = $command->password;

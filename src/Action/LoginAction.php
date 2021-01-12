@@ -33,7 +33,7 @@ class LoginAction
 
         $this->validator->validate($command);
 
-        $jwt = $this->fetcher->getJwt($command);
+        $jwt = $this->fetcher->getJwtByUsernamePassword($command);
 
         return $this->converter->fromJWTToFrontend($jwt);
     }
