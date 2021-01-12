@@ -8,7 +8,6 @@ namespace Test\Functional;
 use Exception;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
-use Proxy\OAuth\Proxy;
 
 class ProxyTest extends WebTestCase
 {
@@ -38,12 +37,21 @@ class ProxyTest extends WebTestCase
 
     public function testCheckSuccess(): void
     {
+        $OAuthData = $this->login();
+
+        $OAuthDataFromCheck = $this->proxy->check($OAuthData);
+
+        $jwt = $this->converter->fromFrontendToJWT($OAuthDataFromCheck);
+
+        self::assertTrue(is_array($jwt));
+        self::assertArrayHasKey('token_type', $jwt);
+        self::assertArrayHasKey('expires_in', $jwt);
+        self::assertArrayHasKey('access_token', $jwt);
+        self::assertArrayHasKey('refresh_token', $jwt);
     }
 
     private function login(?string $login = 'login', ?string $password = 'password'): string
     {
-        $authAction = new Proxy($this->converter, $this->configStore);
-
-        return $authAction->login(new UsernameType($login), new PasswordType($password));
+        return $this->proxy->login(new UsernameType($login), new PasswordType($password));
     }
 }
