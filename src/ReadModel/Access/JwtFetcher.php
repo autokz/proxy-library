@@ -4,25 +4,24 @@
 namespace Proxy\OAuth\ReadModel\Access;
 
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
-use Proxy\OAuth\Helpers\GuzzleHttpClient;
-use Proxy\OAuth\Interfaces\ConfigStoreInterface;
+use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
 use Proxy\OAuth\Model\Access\Command\Check\Command;
 use Proxy\OAuth\Model\Access\Command\Login\Command as CommandLogin;
 
 class JwtFetcher
 {
-    private ConfigStoreInterface $configStore;
+    private ConfigStorageInterface $configStore;
     private HttpClientInterface $httpClient;
     private string $checkUrl;
     private string $loginUrl;
 
     public function __construct(
-        ConfigStoreInterface $configStore,
-        HttpClientInterface $httpClient = null
+        ConfigStorageInterface $configStore,
+        HttpClientInterface $httpClient
     ) {
         $this->configStore = $configStore;
-        $this->httpClient = $httpClient ?? new GuzzleHttpClient();
+        $this->httpClient = $httpClient;
 
         $baseUrl = trim($this->configStore->get('OAUTH_BASE_URL'), '/');
 

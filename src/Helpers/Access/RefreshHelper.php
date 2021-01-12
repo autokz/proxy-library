@@ -4,17 +4,17 @@
 namespace Proxy\OAuth\Helpers\Access;
 
 
-use Proxy\OAuth\Interfaces\ConfigStoreInterface;
+use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
 
 class RefreshHelper
 {
-    private ConfigStoreInterface $config;
+    private ConfigStorageInterface $config;
     private HttpClientInterface $httpClient;
 
     private string $url;
 
-    public function __construct(ConfigStoreInterface $config, HttpClientInterface $httpClient)
+    public function __construct(ConfigStorageInterface $config, HttpClientInterface $httpClient)
     {
         $this->config = $config;
         $this->httpClient = $httpClient;

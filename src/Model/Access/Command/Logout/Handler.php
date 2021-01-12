@@ -5,7 +5,7 @@ namespace Proxy\OAuth\Model\Access\Command\Logout;
 
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
 use Proxy\OAuth\Helpers\GuzzleHttpClient;
-use Proxy\OAuth\Interfaces\ConfigStoreInterface;
+use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
 
@@ -14,12 +14,12 @@ class Handler
 
     private ConverterInterface $converter;
     private HttpClientInterface $httpClient;
-    private ConfigStoreInterface $configStore;
+    private ConfigStorageInterface $configStore;
     private string $url;
 
     public function __construct(
         ConverterInterface $converter,
-        ConfigStoreInterface $configStore,
+        ConfigStorageInterface $configStore,
         HttpClientInterface $httpClient = null
     ) {
         $this->converter = $converter;
