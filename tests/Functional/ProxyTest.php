@@ -57,6 +57,15 @@ class ProxyTest extends WebTestCase
         $this->proxy->check($this->converter->fromJWTToFrontend($result));
     }
 
+    public function testLogoutSuccess(): void
+    {
+        $OAuthData = $this->login();
+
+        $result = $this->proxy->logout($OAuthData);
+
+        self::AssertTrue($result);
+    }
+
     private function login(?string $login = 'login', ?string $password = 'password'): string
     {
         return $this->proxy->login(new UsernameType($login), new PasswordType($password));
