@@ -56,4 +56,44 @@ class JwtTypeTest extends TestCase
         $this->expectExceptionMessage('Jwt should contain key "refresh_token".');
         new JwtType($jwt);
     }
+
+    public function testEmptyTokenType(): void
+    {
+        $jwt = self::$JWT;
+        $jwt['token_type'] = '';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt token_type should be not empty.');
+        new JwtType($jwt);
+    }
+
+    public function testEmptyExpiresIn(): void
+    {
+        $jwt = self::$JWT;
+        $jwt['expires_in'] = '';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt expires_in should be not empty.');
+        new JwtType($jwt);
+    }
+
+    public function testEmptyAccessToken(): void
+    {
+        $jwt = self::$JWT;
+        $jwt['access_token'] = '';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt access_token should be not empty.');
+        new JwtType($jwt);
+    }
+
+    public function testEmptyRefreshToken(): void
+    {
+        $jwt = self::$JWT;
+        $jwt['refresh_token'] = '';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Jwt refresh_token should be not empty.');
+        new JwtType($jwt);
+    }
 }
