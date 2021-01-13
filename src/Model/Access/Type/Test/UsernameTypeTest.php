@@ -9,7 +9,7 @@ use Proxy\OAuth\Model\Access\Type\UsernameType;
 
 class UsernameTypeTest extends TestCase
 {
-    public function testPasswordCorrect(): void
+    public function testUsernameCorrect(): void
     {
         $passwordStr = 'username';
 
@@ -18,7 +18,7 @@ class UsernameTypeTest extends TestCase
         self::assertEquals($passwordStr, $passwordType->getValue());
     }
 
-    public function testPasswordEmpty(): void
+    public function testUsernameEmpty(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No Username set.');
@@ -26,7 +26,7 @@ class UsernameTypeTest extends TestCase
         new UsernameType('');
     }
 
-    public function testPasswordShort(): void
+    public function testUsernameShort(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Username must be more than 3 characters');
