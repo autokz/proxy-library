@@ -2,3 +2,4 @@
 /docker/
 /vendor
 /var
+.env
