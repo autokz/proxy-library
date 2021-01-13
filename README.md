@@ -1,28 +1,44 @@
 # OAuth_proxy
+Description...
 
-proxy handlers:
-
-- LoginHandler::class
-- LogoutHandler::class
-- AccessHandler::class
-
-# Example
-
+## Init 
 ```php
 <?php
 
 $converter = new JWTConverter();
 
-$httpClient = new GuzzleHttpClient();
+$configStorage = new DotEnvConfigStorage(__DIR__ . '/../'); // Path to .env file
+$configStorage->load();
 
-$configStore = new DotEnvConfigStorage(__DIR__ . '/../');
-$configStore->load();
+// Optional variable - Http client
+$httpClient = new CurlHttpClient();
+```
+## Create Proxy 
+```php
+$proxy = new Proxy($converter, $configStore, $httpClient);
 ```
 
-.env example
+### Methods
+```php
+// Login
+$username = new UsernameType('username');
+$password = new PasswordType('password');
+$oAuthData = $proxy->login($username, $password); // string|Exception 
+
+// Logout
+$oAuthData = 'crypted_and_converted_jwt_array_to_string';
+$proxy->logout($oAuthData); // true|Exception
+
+// Check
+$oAuthData = 'crypted_and_converted_jwt_array_to_string';
+$oAuthData = $proxy->check($oAuthData); // string|Exception
+```
+
+
+##.env example
 
 ```env
-OAUTH_BASE_URL="http://172.17.0.1:8080"
+OAUTH_BASE_URL="http://0.0.0.0:8080"
 
 OAUTH_TYPE="Bearer"
 
