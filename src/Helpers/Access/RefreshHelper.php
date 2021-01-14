@@ -33,6 +33,6 @@ class RefreshHelper
             'client_secret' => $this->config->get('OAUTH_CLIENT_SECRET'),
         ];
 
-        return json_decode($this->httpClient->post($this->url, $body, [])->getBody()->getContents(), true);
+        return json_decode((string)$this->httpClient->post($this->url, $body, [])->getBody(), true);
     }
 }

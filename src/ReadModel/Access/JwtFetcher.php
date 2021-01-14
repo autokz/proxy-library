@@ -44,7 +44,7 @@ class JwtFetcher
             'domain' => $this->configStore->get('OAUTH_DOMAIN')
         ];
 
-        $Jwt = $this->httpClient->post($this->loginUrl, $body)->getBody()->getContents();
+        $Jwt = (string)$this->httpClient->post($this->loginUrl, $body)->getBody();
 
         return json_decode($Jwt, true);
     }
