@@ -1,7 +1,5 @@
 # OAuth_proxy
 
-Description...
-
 ![alt text](https://github.com/Faridjan/images/blob/main/proxy_lib/proxy.png?raw=true)
 
 
