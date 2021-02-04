@@ -1,7 +1,9 @@
 # OAuth_proxy
 
 Description...
-![alt text](https://disk.yandex.kz/i/9wXA9oFjOVPwkg)
+
+![alt text](https://github.com/Faridjan/images/blob/main/proxy_lib/proxy.png?raw=true)
+
 
 ## Init 
 ```php
