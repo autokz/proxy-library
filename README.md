@@ -39,7 +39,7 @@ $oAuthData = $proxy->check($oAuthData); // string|Exception
 ```
 
 
-##.env example
+## .env example
 
 ```env
 OAUTH_BASE_URL="http://0.0.0.0:8080"
