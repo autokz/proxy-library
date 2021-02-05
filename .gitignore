@@ -1,5 +1,5 @@
-.idea
-docker
-vendor
-var
+/.idea
+/docker
+/vendor
+/var
 .env
