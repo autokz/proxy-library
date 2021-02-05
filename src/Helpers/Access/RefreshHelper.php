@@ -24,15 +24,18 @@ class RefreshHelper
         $this->refreshUrl = $baseUrl . '/' . $loginUrl;
     }
 
-    public function refresh($refreshToken): array
+    public function refresh(array $refreshToken): array
     {
         $body = [
             'grant_type' => $this->config->get('OAUTH_REFRESH_GRANT_TYPE'),
-            'refresh_token' => $refreshToken,
+            'refresh_token' => $refreshToken['refresh_token'],
             'client_id' => $this->config->get('OAUTH_CLIENT_ID'),
             'client_secret' => $this->config->get('OAUTH_CLIENT_SECRET'),
         ];
 
-        return json_decode((string)$this->httpClient->post($this->refreshUrl, $body, [])->getBody(), true);
+        return json_decode(
+            (string)$this->httpClient->post($this->refreshUrl, $body, [])->getBody(),
+            true
+        );
     }
 }

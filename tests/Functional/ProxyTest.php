@@ -54,6 +54,27 @@ class ProxyTest extends WebTestCase
         $this->proxy->check($this->converter->fromJWTToFrontend($cryptedAccessToken));
     }
 
+    public function testRefreshMethodSuccess(): void
+    {
+        $cryptedAccessToken = $this->getJwt('refresh_token');
+
+        $jwt = $this->proxy->refresh($cryptedAccessToken);
+
+        $this->assertCorrectJwt($this->converter->fromFrontendToJWT($jwt));
+    }
+
+    public function testRefreshMethodInvalid(): void
+    {
+        $cryptedAccessToken = $this->getJwt('refresh_token', true);
+        $cryptedAccessToken['refresh_token'] .= '__INVALID__';
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The refresh token is invalid.');
+        $this->expectExceptionCode(400);
+
+        $this->proxy->refresh($this->converter->fromJWTToFrontend($cryptedAccessToken));
+    }
+
     public function testLogoutMethodSuccess(): void
     {
         $OAuthData = $this->getJwt('access_token');
@@ -95,7 +116,7 @@ class ProxyTest extends WebTestCase
         return $this->converter->fromJWTToFrontend($accessToken);
     }
 
-    private function login(string $login = 'login', string $password = 'password'): string
+    private function login(string $login = 'farid@auto.kz', string $password = 'fred777a'): string
     {
         return $this->proxy->login(new UsernameType($login), new PasswordType($password));
     }

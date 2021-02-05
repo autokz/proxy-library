@@ -51,7 +51,6 @@ class JwtFetcher
         return json_decode($Jwt, true);
     }
 
-
     /**
      * @param array $jwt
      * @return array
