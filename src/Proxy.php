@@ -9,7 +9,6 @@ use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
 use Proxy\OAuth\Model\Access\Command\Logout\Handler;
-use Proxy\OAuth\Model\Access\Type\JwtType;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
 use Proxy\OAuth\ReadModel\Access\JwtFetcher;
@@ -49,7 +48,7 @@ class Proxy
         $jwt = $this->converter->fromFrontendToJWT($authData);
 
         $logoutHandler = new Handler($this->converter, $this->configStore);
-        $logoutHandler->handle(new JwtType($jwt));
+        $logoutHandler->handle($jwt);
 
         $this->converter->fromJWTToFrontend([]);
 
@@ -58,10 +57,19 @@ class Proxy
 
     public function check(string $authData): string
     {
-        $jwtData = $this->converter->fromFrontendToJWT($authData);
+        $accessToken = $this->converter->fromFrontendToJWT($authData);
 
-        $jwt = $this->fetcher->getByOAuthData(new JwtType($jwtData));
+        $jwt = $this->fetcher->getByAccessToken($accessToken);
 
         return $this->converter->fromJWTToFrontend($jwt);
+    }
+
+    public function refresh(string $authData): string
+    {
+        $refreshToken = $this->converter->fromFrontendToJWT($authData);
+
+        $refreshWithAccessToken = $this->fetcher->getByRefreshToken($refreshToken);
+
+        return $this->converter->fromJWTToFrontend($refreshWithAccessToken);
     }
 }

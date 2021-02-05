@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Proxy\OAuth\ReadModel\Access;
 
+use PHPUnit\Exception;
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
-use Proxy\OAuth\Model\Access\Type\JwtType;
 use Proxy\OAuth\Model\Access\Type\PasswordType;
 use Proxy\OAuth\Model\Access\Type\UsernameType;
 
@@ -49,16 +51,27 @@ class JwtFetcher
         return json_decode($Jwt, true);
     }
 
-    public function getByOAuthData(JwtType $jwt): array
+
+    /**
+     * @param array $jwt
+     * @return array
+     * @throws \Exception Throws when access token expired.
+     */
+    public function getByAccessToken(array $jwt): array
     {
-        $jwtArray = $jwt->getValue();
+        $this->check($jwt);
+        return $jwt;
+    }
 
-        if (!$this->check($jwtArray)) {
-            $jwtArray = (new RefreshHelper($this->configStore, $this->httpClient))
-                ->refresh($jwt);
-        }
-
-        return $jwtArray;
+    /**
+     * @param array $jwt
+     * @return array
+     * @throws \Exception Throws when refresh token expired.
+     */
+    public function getByRefreshToken(array $jwt): array
+    {
+        return (new RefreshHelper($this->configStore, $this->httpClient))
+            ->refresh($jwt);
     }
 
     private function check(array $jwt): bool
@@ -67,7 +80,7 @@ class JwtFetcher
             'Authorization' => $this->configStore->get('OAUTH_TYPE') . ' ' . $jwt['access_token'],
         ];
 
-        $responseClient = $this->httpClient->get($this->checkUrl, [], $headers, ['http_errors' => false]);
+        $responseClient = $this->httpClient->get($this->checkUrl, [], $headers);
 
         return $responseClient->getStatusCode() === 200;
     }

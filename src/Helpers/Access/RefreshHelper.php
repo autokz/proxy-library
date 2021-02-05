@@ -11,7 +11,7 @@ class RefreshHelper
     private ConfigStorageInterface $config;
     private HttpClientInterface $httpClient;
 
-    private string $url;
+    private string $refreshUrl;
 
     public function __construct(ConfigStorageInterface $config, HttpClientInterface $httpClient)
     {
@@ -21,18 +21,18 @@ class RefreshHelper
         $baseUrl = trim($this->config->get('OAUTH_BASE_URL'), '/');
         $loginUrl = trim($this->config->get('OAUTH_URL'), '/');
 
-        $this->url = $baseUrl . '/' . $loginUrl;
+        $this->refreshUrl = $baseUrl . '/' . $loginUrl;
     }
 
-    public function refresh(JwtType $jwt): array
+    public function refresh($refreshToken): array
     {
         $body = [
             'grant_type' => $this->config->get('OAUTH_REFRESH_GRANT_TYPE'),
-            'refresh_token' => $jwt->getValue()['refresh_token'],
+            'refresh_token' => $refreshToken,
             'client_id' => $this->config->get('OAUTH_CLIENT_ID'),
             'client_secret' => $this->config->get('OAUTH_CLIENT_SECRET'),
         ];
 
-        return json_decode((string)$this->httpClient->post($this->url, $body, [])->getBody(), true);
+        return json_decode((string)$this->httpClient->post($this->refreshUrl, $body, [])->getBody(), true);
     }
 }

@@ -32,34 +32,31 @@ class ProxyTest extends WebTestCase
 
     public function testCheckMethodSuccess(): void
     {
-        $OAuthData = $this->login();
+        $cryptedAccessToken = $this->getJwt('access_token');
 
-        $OAuthDataFromCheck = $this->proxy->check($OAuthData);
+        $OAuthDataFromCheck = $this->proxy->check($cryptedAccessToken);
 
         $jwt = $this->converter->fromFrontendToJWT($OAuthDataFromCheck);
 
-        $this->assertCorrectJwt($jwt);
+        self::assertArrayHasKey('access_token', $jwt);
     }
 
     public function testCheckMethodInvalid(): void
     {
-        $result = [
-            "token_type" => "__INCORRECT__TYPE__",
-            "expires_in" => "__INCORRECT__EXPIRES__",
-            "access_token" => "__INCORRECT__ACCESS-TOKEN__",
-            "refresh_token" => "__INCORRECT__REFRESH-TOKEN__"
-        ];
+        $cryptedAccessToken = $this->getJwt('access_token', true);
+
+        $cryptedAccessToken['access_token'] .= '__INVALID__';
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The refresh token is invalid.');
+        $this->expectExceptionMessage('The resource owner or authorization server denied the request.');
         $this->expectExceptionCode(400);
 
-        $this->proxy->check($this->converter->fromJWTToFrontend($result));
+        $this->proxy->check($this->converter->fromJWTToFrontend($cryptedAccessToken));
     }
 
     public function testLogoutMethodSuccess(): void
     {
-        $OAuthData = $this->login();
+        $OAuthData = $this->getJwt('access_token');
 
         $result = $this->proxy->logout($OAuthData);
 
@@ -68,20 +65,37 @@ class ProxyTest extends WebTestCase
 
     public function testLogoutMethodInvalid(): void
     {
-        $jwt = $this->converter->fromFrontendToJWT($this->login());
+        $cryptedAccessToken = $this->getJwt('access_token', true);
+        $cryptedAccessToken['access_token'] .= '__INVALID__';
 
-        $jwt['access_token'] .= '__INCORRECT__ACCESS-TOKEN__';
-        $jwt['refresh_token'] .= '__INCORRECT__REFRESH-TOKEN__';
+        $cryptedAccessToken = $this->converter->fromJWTToFrontend($cryptedAccessToken);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('The refresh token is invalid.');
+        $this->expectExceptionMessage('The resource owner or authorization server denied the request.');
         $this->expectExceptionCode(400);
 
-        $OAuthData = $this->converter->fromJWTToFrontend($jwt);
-        $this->proxy->logout($OAuthData);
+        $this->proxy->logout($cryptedAccessToken);
     }
 
-    private function login(?string $login = 'login', ?string $password = 'password'): string
+    private function getJwt(string $nameToken, ?bool $assoc = false)
+    {
+        $OAuthData = $this->converter->fromFrontendToJWT($this->login());
+
+        $accessToken = array_filter(
+            $OAuthData,
+            function ($key) use ($nameToken) {
+                return $key === $nameToken;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        if ($assoc) {
+            return $accessToken;
+        }
+        return $this->converter->fromJWTToFrontend($accessToken);
+    }
+
+    private function login(string $login = 'login', string $password = 'password'): string
     {
         return $this->proxy->login(new UsernameType($login), new PasswordType($password));
     }
