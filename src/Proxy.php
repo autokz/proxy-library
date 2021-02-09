@@ -47,7 +47,7 @@ class Proxy
     {
         $jwt = $this->converter->fromFrontendToJWT($authData);
 
-        $logoutHandler = new Handler($this->converter, $this->configStore);
+        $logoutHandler = new Handler($this->converter, $this->configStore, $this->httpClient);
         $logoutHandler->handle($jwt);
 
         $this->converter->fromJWTToFrontend([]);

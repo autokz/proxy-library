@@ -18,11 +18,11 @@ class Handler
     public function __construct(
         ConverterInterface $converter,
         ConfigStorageInterface $configStore,
-        HttpClientInterface $httpClient = null
+        HttpClientInterface $httpClient
     ) {
         $this->converter = $converter;
         $this->configStore = $configStore;
-        $this->httpClient = $httpClient ?? new GuzzleHttpClient();
+        $this->httpClient = $httpClient;
 
         $baseUrl = trim($this->configStore->get('OAUTH_BASE_URL'), '/');
         $logoutUrl = trim($this->configStore->get('OAUTH_LOGOUT_URL'), '/');
