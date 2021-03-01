@@ -14,7 +14,7 @@ class UsernameType
     {
         Assert::notEmpty($username, 'No Username set.');
         Assert::minLength($username, 3, 'Username must be more than 3 characters');
-        $this->username = $username;
+        $this->username = strtolower($username);
     }
 
     public function getValue(): string
