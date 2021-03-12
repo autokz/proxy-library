@@ -43,11 +43,13 @@ class Proxy
         return $this->converter->fromJWTToFrontend($jwt);
     }
 
-    public function loginWithGetUserPayload(UsernameType $username, PasswordType $password): string
+    public function loginWithGetUserPayload(UsernameType $username, PasswordType $password): array
     {
-        $jwt = $this->fetcher->getJwtByUsernamePassword($username, $password, true);
+        $jwtWthUserPayload = $this->fetcher->getJwtByUsernamePassword($username, $password, true);
 
-        return $this->converter->fromJWTToFrontend($jwt);
+        $jwtWthUserPayload['jwt'] = $this->converter->fromJWTToFrontend($jwtWthUserPayload['jwt']);
+
+        return $jwtWthUserPayload;
     }
 
     public function logout(string $authData): bool
