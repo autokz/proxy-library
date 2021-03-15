@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Proxy\OAuth\ReadModel\Access;
 
-use PHPUnit\Exception;
 use Proxy\OAuth\Helpers\Access\RefreshHelper;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
@@ -34,8 +33,11 @@ class JwtFetcher
         $this->loginUrl = $baseUrl . '/' . $loginUrl;
     }
 
-    public function getJwtByUsernamePassword(UsernameType $username, PasswordType $password): array
-    {
+    public function getJwtByUsernamePassword(
+        UsernameType $username,
+        PasswordType $password,
+        ?bool $withUserPayload = false
+    ): array {
         $body = [
             'grant_type' => $this->configStore->get('OAUTH_GRANT_TYPE'),
             'username' => $username->getValue(),
@@ -46,9 +48,18 @@ class JwtFetcher
             'domain' => $this->configStore->get('OAUTH_DOMAIN')
         ];
 
-        $Jwt = (string)$this->httpClient->post($this->loginUrl, $body)->getBody();
+        $responseFromOAuth = $this->httpClient->post($this->loginUrl, $body);
 
-        return json_decode($Jwt, true);
+        $JwtArr = json_decode((string)$responseFromOAuth->getBody(), true);
+
+        if ($withUserPayload) {
+            return [
+                'jwt' => $JwtArr,
+                'user_payload' => json_decode($responseFromOAuth->getHeaderLine('X-User-Payload'), true)
+            ];
+        }
+
+        return $JwtArr;
     }
 
     /**

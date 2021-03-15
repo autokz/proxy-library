@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Proxy\OAuth\Model\Access\Type\Test;
 
 use InvalidArgumentException;

@@ -3,7 +3,6 @@
 namespace Proxy\OAuth\Model\Access\Command\Logout;
 
 use Exception;
-use Proxy\OAuth\Helpers\GuzzleHttpClient;
 use Proxy\OAuth\Interfaces\ConfigStorageInterface;
 use Proxy\OAuth\Interfaces\ConverterInterface;
 use Proxy\OAuth\Interfaces\HttpClientInterface;
@@ -41,5 +40,4 @@ class Handler
 
         $this->httpClient->post($this->url, [], $headers);
     }
-
 }
